@@ -9,24 +9,66 @@ body {
   margin: 0;
 }
 
-.head-content {
+.user-masthead, .head-content, .help {
   margin: 0 auto;
   max-width: 1200px;
+  padding: 16px 0;
 }
 
+  .user-masthead {
+    border-bottom: 1px solid #A4A4A4;
+  }
+
+  .head-content {
+    padding: 1.6em 0;
+    text-align: center;
+  }
+
   .head-content h1 {
-    font-size: 24px;
+    font-size: 32px;
     margin: 0;
-    padding: 12px 0;
   }
 
   .head-content p {
-    font-size: 18px;
+    font-size: 24px;
     margin: 0;
     padding: 6px 0;
   }
 
 .form {
-  margin: 0 auto;
+  margin: 12px auto;
+  max-width: 1200px;
+  text-align: center;
+}
+
+  .form #query {
+    width: 80%;
+    padding: 12px 18px;
+    font-size: 26px;
+  }
+
+  .form #submit {
+    background-color: #F7F7F7;
+    border: 1px solid #000;
+    font-size: 26px;
+    padding: 12px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+    .form #submit:hover {
+      background-color: #000;
+      color: #FFF;
+    }
+
+.help {
+  background-color: #E6E6E6;
+  border-radius: 16px;
+  font-size: 20px;
+  margin: 4em auto;
   max-width: 1000px;
 }
+
+  .help p, .help h3 {
+    margin: 6px 12px;
+    padding: 8px;
+  }
