@@ -6,4 +6,27 @@ html {
 
 body {
   font-family: 'Arimo', sans-serif;
+  margin: 0;
+}
+
+.head-content {
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+  .head-content h1 {
+    font-size: 24px;
+    margin: 0;
+    padding: 12px 0;
+  }
+
+  .head-content p {
+    font-size: 18px;
+    margin: 0;
+    padding: 6px 0;
+  }
+
+.form {
+  margin: 0 auto;
+  max-width: 1000px;
 }
