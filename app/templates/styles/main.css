@@ -1,0 +1,9 @@
+/* Main CSS for the movie application's public-facing side. */
+
+html {
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Arimo', sans-serif;
+}
