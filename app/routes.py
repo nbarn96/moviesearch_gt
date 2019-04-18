@@ -1,8 +1,16 @@
 from flask import render_template
-from flask-mysqldb import mysql
+import pymysql
 from app import app
 
-# Render the home page seen by all users.
+# Set up DB connection.
+db_user = "yudong"
+db_pass = "pEf=f1ti+uxo"
+db_name = "movies"
+db_host = "nbarn.io"
+conn = pymysql.connect(db_host, db_user, db_pass, db_name)
+cur = conn.cursor()
+
+# Render the home page seen by all logged-in users.
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -13,9 +21,25 @@ def register_user():
     if request.method == "POST":
         user = request.form['username']
         pass = request.form['password']
-        
+
 
 # Search for movies.
-@app.route('/search')
+@app.route('/', methods = ['POST'])
 def search():
-    return render_template('search.html')
+    query = request.form['query']
+
+    if "episode:" in query: # Search for episodes.
+        cur.execute("")
+
+    elif "director:" in query: # Search for directors.
+        cur.execute("")
+
+    elif "actor:" in query: # Search for actors.
+        cur.execute("")
+
+    else: # Do a general search.
+        cur.execute("")
+
+    res = cur.fetchall()
+
+    return res
