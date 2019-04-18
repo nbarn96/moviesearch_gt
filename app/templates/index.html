@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Movie application</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'main.css') }}">
+        <link href="https://fonts.googleapis.com/css?family=Arimo" rel="stylesheet">
+        <script type="text/javascript" src="{{ url_for('static', filename = 'extra.js')}}">
+    </head>
+    <body>
+      <div class="user-masthead">
+        <p>Welcome back <b>Sham Navathe</b>! <a href='/my-list'>View your list</a> or <a href='/logout'>logout</a>.</p>
+      </div>
+      <div class="head-content">
+        <h1>Movie app</h1>
+        <p>A simple web application to find information on movies, directors, episode titles, and more!</p>
+      </div>
+      <div class="form">
+        <form method="post" id="search-form">
+          <input type="text" id="query" placeholder="Search for stuff!" name="query" />
+          <button type="submit" id="submit">Search</button>
+        </form>
+      </div>
+      <div class="help">
+        <h3>Search tips</h3>
+        <p>
+          To search for a movie, simply enter the name in the field above.
+        </p>
+        <p>
+          This tool also supports finding movies by director, episode titles, and actors. To find the name of
+          a movie or show using these attributes, type "[attribute name]: [query]" in the search bar. For
+          example, to search for a show by an episode title, type "episode: [name of episode]".
+        </p>
+      </div>
+    </body>
+</html>
