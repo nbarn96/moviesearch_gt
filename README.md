@@ -10,5 +10,5 @@ This is for CSS and JavaScript files, along with any images that aren't part of 
 # /app/templates
 This is for HTML files.
 
-# routes.py
+# /app/routes.py
 This is for the Python functions and methods that power the application.
