@@ -1,15 +1,20 @@
 <?php
   session_start();
-  if (!$_SESSION['movies']) {
+  if (!isset($_SESSION['movies'])) {
     header("Location: login.php");
   }
 
-  include "assets/scripts/auth.php";
-  include "assets/scripts/user.php";
+  include_once "assets/scripts/user.php";
 
   $conn = conn();
 
   $usr = $_SESSION['movies'];
+
+  $role = userRole($usr);
+
+  if ($role != "admin") {
+    header("Location: index.php");
+  }
 ?><!DOCTYPE html>
 <html lang="en">
   <head>
@@ -21,7 +26,7 @@
   </head>
   <body>
     <div class="user-masthead">
-      <p>Welcome back <b><? echo $usr; ?></b>! <a href='/my-list.php'>View your list</a><? if $role == "admin" { ?>, <a href='/users.php'>manage users</a><? } ?> or <a href='/login.php'>logout</a>.</p>
+      <p>Welcome back <b><?php echo $usr; ?></b>! <a href='/my-list.php'>View your list</a><?php if ($role == "admin") { ?>, <a href='/users.php'>manage users</a><?php } ?> or <a href='/login.php'>logout</a>.</p>
     </div>
     <div class="head-content">
       <h1>User management</h1>
@@ -31,8 +36,12 @@
         <tr>
           <td>Username</td>
           <td>Role</td>
+          <td>Actions</td>
         </tr>
       </thead>
+      <tbody>
+        <?php getUsers(); ?>
+      </tbody>
     </table>
   </body>
 </html>

@@ -1,11 +1,11 @@
 <?php
   session_start();
-  if ($_SESSION['movies']) {
+  if (isset($_SESSION['movies'])) {
     unset($_SESSION['movies']);
     $loginmsg = "You have been logged out. If this was a mistake, log in again.";
   }
 
-  include "assets/scripts/auth.php";
+  require_once "assets/scripts/auth.php";
 
   $conn = conn();
 
@@ -16,7 +16,7 @@
       $user = mysqli_real_escape_string($conn, $_POST['username']);
       $pass = mysqli_real_escape_string($conn, $_POST['password']);
 
-      $loginmsg = login($user, $pass);
+      $loginmsg = login_user($user, $pass);
     }
   }
 
@@ -36,9 +36,9 @@
 
         <div style = "margin:30px">
 
-        <? if isset($loginmsg) { ?>
-          <div style = "font-size:11px; color:#cc0000; margin: 10px 0;" class="loginmsg"><? echo $loginmsg; ?></div>
-        <? } ?>
+        <?php if (isset($loginmsg)) { ?>
+          <div style = "font-size:11px; color:#cc0000; margin: 10px 0;"><?php echo $loginmsg; ?></div>
+        <?php } ?>
 
             <form action="" id="login" method="post">
                 <label>Username: </label><input type = "text" name = "username" id="username" class="box" /><br /><br />

@@ -8,7 +8,7 @@
     return $db;
   }
 
-  function login($user, $pass) {
+  function login_user($user, $pass) {
     $conn = conn();
 
     $query = mysqli_query($conn, "SELECT userId, password FROM Users WHERE userId = '$user' AND password = '$pass'");
@@ -17,7 +17,7 @@
       return "Your credentials are incorrect.";
     } else if (mysqli_num_rows($query) == 1) {
       session_start();
-      $_SESSION['movies'] = $row['userId'];
+      $_SESSION['movies'] = $user;
       header("Location: index.php");
     }
   }
