@@ -1,6 +1,16 @@
 <?php
   include "auth.php";
 
+  if (isset($_GET['action'])) {
+    if ($_GET['action'] == "demote") {
+      demoteUser($_GET['id']);
+    } elseif ($_GET['action'] == "promote") {
+      promoteUser($_GET['id']);
+    } elseif ($_GET['action'] == "delete") {
+      deleteUser($_GET['id']);
+    }
+  }
+
   function userRole($userId) {
     $conn = conn();
 
@@ -21,11 +31,11 @@
       echo "<td>".$row['type']."</td>";
       echo "<td>";
       if ($row['type'] == "admin") {
-        echo "<a href='#'>Demote</a>";
+        echo "<a href='assets/scripts/user.php?id=".$row['userId']."&action=demote'>Demote</a>";
       } else {
-        echo "<a href='#'>Promote</a>";
+        echo "<a href='assets/scripts/user.php?id=".$row['userId']."&action=promote'>Promote</a>";
       }
-      echo "<a href='#'>Delete account</a>";
+      echo "<a href='assets/scripts/user.php?id=".$row['userId']."&action=delete'>Delete account</a>";
       echo "</td>";
       echo "</tr>";
     }
@@ -33,7 +43,19 @@
 
   function deleteUser($userId) {
     $con = conn();
+    $query = mysqli_query($con, "DELETE FROM Users WHERE userId = '$userId'");
+    header("Location: /users.php");
+  }
 
+  function promoteUser($userId) {
+    $con = conn();
+    $query = mysqli_query($con, "UPDATE Users SET type = 'admin' WHERE userId = '$userId'");
+    header("Location: /users.php");
+  }
 
+  function demoteUser($userId) {
+    $con = conn();
+    $query = mysqli_query($con, "UPDATE Users SET type = 'user' WHERE userId = '$userId'");
+    header("Location: /users.php");
   }
 ?>
