@@ -71,7 +71,7 @@
 
   function getUserList($userId) {
     $con = conn();
-    $query = mysqli_query($con, "SELECT userId, titles, name, TitleBasics.genres AS genres, TitleBasics.titleType AS titleType FROM Lists, TitleBasics WHERE Lists.userId = '$userId' AND Lists.titles = TitleBasics.tconst");
+    $query = mysqli_query($con, "SELECT userId, titles, name, TitleBasics.genres AS genres, TitleBasics.titleType AS titleType, TitleBasics.startYear as startYear FROM Lists, TitleBasics WHERE Lists.userId = '$userId' AND Lists.titles = TitleBasics.tconst");
 
     if (mysqli_num_rows($query) == 0) {
       echo "You have no titles in your list!";
@@ -114,7 +114,7 @@
 
         echo "<tr>";
         echo "<td>";
-        echo $row['name']."<br>";
+        echo $row['name']." <span class='subtitle'>(".$row['startYear'].")</span><br>";
         echo "<span class='subtitle'><i>$titleType</i></span><br>";
         echo "<span class='subtitle'><i>Genres: $genres</i></span>";
         echo "</td>";
@@ -126,7 +126,7 @@
         echo "<br><b>IMDB rating:</b> ".$row_rating['averageRating']."/10 (".number_format($row_rating['numVotes'])." votes cast)";
         echo "</td>";
         echo "<td>";
-        echo "<a href='assets/scripts/user.php?user=".$row['userId']."&name=$title&action=delete'>Delete</a>";
+        echo "<a href='assets/scripts/user.php?user=".$row['userId']."&name=$title&action=delete'>Delete from list</a>";
         echo "</td>";
         echo "</tr>";
       }
