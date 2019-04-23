@@ -53,19 +53,19 @@
 
   function deleteUser($userId) {
     $con = conn();
-    $query = mysqli_query($con, "DELETE FROM Users WHERE userId = '$userId'");
+    mysqli_query($con, "DELETE FROM Lists, Users WHERE userId = '$userId'");
     header("Location: /users.php");
   }
 
   function promoteUser($userId) {
     $con = conn();
-    $query = mysqli_query($con, "UPDATE Users SET type = 'admin' WHERE userId = '$userId'");
+    mysqli_query($con, "UPDATE Users SET type = 'admin' WHERE userId = '$userId'");
     header("Location: /users.php");
   }
 
   function demoteUser($userId) {
     $con = conn();
-    $query = mysqli_query($con, "UPDATE Users SET type = 'user' WHERE userId = '$userId'");
+    mysqli_query($con, "UPDATE Users SET type = 'user' WHERE userId = '$userId'");
     header("Location: /users.php");
   }
 
