@@ -71,7 +71,7 @@
 
   function getUserList($userId) {
     $con = conn();
-    $query = mysqli_query($con, "SELECT userId, name, TitleBasics.genres AS genres, TitleBasics.titleType AS titleType FROM Lists, TitleBasics WHERE Lists.userId = '$userId' AND Lists.titles = TitleBasics.tconst");
+    $query = mysqli_query($con, "SELECT userId, titles, name, TitleBasics.genres AS genres, TitleBasics.titleType AS titleType FROM Lists, TitleBasics WHERE Lists.userId = '$userId' AND Lists.titles = TitleBasics.tconst");
 
     if (mysqli_num_rows($query) == 0) {
       echo "You have no titles in your list!";
@@ -92,17 +92,24 @@
       echo "</thead>";
       echo "<tbody>";
       while ($row = mysqli_fetch_array($query)) {
+        $title_id = $row['titles'];
         $title = $row['name'];
         $genres = preg_replace('/(?<!\d),|,(?!\d{3})/', ', ', $row['genres']);
-        $runtime = mysqli_query($con, "SELECT primaryTitle, SUM(runtimeMinutes) AS total_runtime FROM TitleBasics, TitleEpisodes WHERE TitleEpisodes.parentTconst = TitleBasics.tconst AND primaryTitle = '$title'");
-        $eps = mysqli_query($con, "SELECT SUM(episodeNumber) AS num_eps FROM TitleEpisodes, TitleBasics WHERE parentTconst = TitleBasics.tconst AND TitleBasics.primaryTitle = '$title'");
+        $runtime = mysqli_query($con, "SELECT primaryTitle, SUM(episodeNumber), SUM(runtimeMinutes) AS total_runtime FROM TitleBasics, TitleEpisodes WHERE TitleEpisodes.parentTconst = TitleBasics.tconst AND primaryTitle = '$title' AND TitleEpisodes.episodeNumber != CHAR(10)");
+        $eps = mysqli_query($con, "SELECT COUNT(episodeNumber) AS num_eps FROM TitleEpisodes, TitleBasics WHERE parentTconst = TitleBasics.tconst AND TitleBasics.primaryTitle = '$title'");
+        $rating = mysqli_query($con, "SELECT * FROM TitleRatings WHERE tconst = '$title_id'");
         $row_runtime = mysqli_fetch_assoc($runtime);
         $row_eps = mysqli_fetch_assoc($eps);
+        $row_rating = mysqli_fetch_assoc($rating);
 
         if ($row['titleType'] == "tvSeries") {
           $titleType = "TV show";
+          $runtime = mysqli_query($con, "SELECT primaryTitle, SUM(episodeNumber), SUM(runtimeMinutes) AS total_runtime FROM TitleBasics, TitleEpisodes WHERE TitleEpisodes.parentTconst = TitleBasics.tconst AND primaryTitle = '$title' AND TitleEpisodes.episodeNumber != CHAR(10)");
+          $row_runtime = mysqli_fetch_assoc($runtime);
         } else {
           $titleType = "Movie";
+          $runtime = mysqli_query($con, "SELECT SUM(runtimeMinutes) AS total_runtime FROM TitleBasics WHERE tconst = '$title_id'");
+          $row_runtime = mysqli_fetch_assoc($runtime);
         }
 
         echo "<tr>";
@@ -112,8 +119,11 @@
         echo "<span class='subtitle'><i>Genres: $genres</i></span>";
         echo "</td>";
         echo "<td>";
-        echo "<b>Total runtime:</b> ".number_format($row_runtime['total_runtime'])." minutes, or ".number_format($row_runtime['total_runtime'] / 60, 2)." hours<br>";
-        echo "<b>Number of episodes:</b> ".number_format($row_eps['num_eps'])."</br>";
+        echo "<b>Total runtime:</b> ".number_format($row_runtime['total_runtime'])." minutes, or ".number_format($row_runtime['total_runtime'] / 60, 2)." hours";
+        if ($titleType == "TV show") {
+          echo "<br><b>Number of episodes:</b> ".number_format($row_eps['num_eps']);
+        }
+        echo "<br><b>IMDB rating:</b> ".$row_rating['averageRating']."/10 (".number_format($row_rating['numVotes'])." votes cast)";
         echo "</td>";
         echo "<td>";
         echo "<a href='assets/scripts/user.php?user=".$row['userId']."&name=$title&action=delete'>Delete</a>";
