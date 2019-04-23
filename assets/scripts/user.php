@@ -58,4 +58,44 @@
     $query = mysqli_query($con, "UPDATE Users SET type = 'user' WHERE userId = '$userId'");
     header("Location: /users.php");
   }
+
+  function getUserList($userId) {
+    $con = conn();
+    $query = mysqli_query($con, "SELECT * FROM Lists WHERE userId = '$userId'");
+
+    if (mysqli_num_rows($query) == 0) {
+      echo "You have no titles in your list!";
+    } else {
+      echo "<table class='user-listing'>";
+      echo "<thead>";
+      echo "<tr>";
+      echo "<td>";
+      echo "Title";
+      echo "</td>";
+      echo "<td>";
+      echo "Title info";
+      echo "</td>";
+      echo "</tr>";
+      echo "</thead>";
+      echo "<tbody>";
+      while ($row = mysqli_fetch_array($query)) {
+        $title = $row['name'];
+        $runtime = mysqli_query($con, "SELECT primaryTitle, SUM(runtimeMinutes) AS total_runtime FROM TitleBasics, TitleEpisodes WHERE TitleEpisodes.parentTconst = TitleBasics.tconst AND primaryTitle = '$title'");
+        $eps = mysqli_query($con, "SELECT SUM(episodeNumber) AS num_eps FROM TitleEpisodes, TitleBasics WHERE parentTconst = TitleBasics.tconst AND TitleBasics.primaryTitle = '$title'");
+        $row_runtime = mysqli_fetch_assoc($runtime);
+        $row_eps = mysqli_fetch_assoc($eps);
+        echo "<tr>";
+        echo "<td>";
+        echo $row['name'];
+        echo "</td>";
+        echo "<td>";
+        echo "<b>Total runtime:</b> ".$row_runtime['total_runtime']."<br>";
+        echo "<b>Number of episodes:</b> ".$row_eps['num_eps']."</br>";
+        echo "</td>";
+        echo "</tr>";
+      }
+      echo "</tbody>";
+      echo "</table>";
+    }
+  }
 ?>
