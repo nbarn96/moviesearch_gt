@@ -53,7 +53,8 @@
 
   function deleteUser($userId) {
     $con = conn();
-    mysqli_query($con, "DELETE FROM Lists, Users WHERE userId = '$userId'");
+    mysqli_query($con, "DELETE FROM Lists WHERE userId = '$userId'");
+    mysqli_query($con, "DELETE FROM Users WHERE userId = '$userId'");
     header("Location: /users.php");
   }
 
@@ -71,7 +72,7 @@
 
   function getUserList($userId) {
     $con = conn();
-    $query = mysqli_query($con, "SELECT userId, titles, name, TitleBasics.genres AS genres, TitleBasics.titleType AS titleType, TitleBasics.startYear as startYear FROM Lists, TitleBasics WHERE Lists.userId = '$userId' AND Lists.titles = TitleBasics.tconst");
+    $query = mysqli_query($con, "SELECT userId, titles, name, TitleBasics.averageRating as averageRating, TitleBasics.runtimeMinutes AS runtimeMinutes, TitleBasics.genres AS genres, TitleBasics.titleType AS titleType, TitleBasics.startYear as startYear, TitleRatings.numVotes AS numVotes FROM Lists INNER JOIN TitleBasics WHERE Lists.userId = '$userId' AND Lists.titles = TitleBasics.tconst");
 
     if (mysqli_num_rows($query) == 0) {
       echo "You have no titles in your list!";
@@ -95,35 +96,46 @@
         $title_id = $row['titles'];
         $title = $row['name'];
         $genres = preg_replace('/(?<!\d),|,(?!\d{3})/', ', ', $row['genres']);
-        $runtime = mysqli_query($con, "SELECT primaryTitle, SUM(episodeNumber), SUM(runtimeMinutes) AS total_runtime FROM TitleBasics, TitleEpisodes WHERE TitleEpisodes.parentTconst = TitleBasics.tconst AND primaryTitle = '$title' AND TitleEpisodes.episodeNumber != CHAR(10)");
-        $eps = mysqli_query($con, "SELECT COUNT(episodeNumber) AS num_eps FROM TitleEpisodes, TitleBasics WHERE parentTconst = TitleBasics.tconst AND TitleBasics.primaryTitle = '$title'");
-        $rating = mysqli_query($con, "SELECT * FROM TitleRatings WHERE tconst = '$title_id'");
-        $row_runtime = mysqli_fetch_assoc($runtime);
+        $eps = mysqli_query($con, "SELECT COUNT(episodeNumber) AS num_eps FROM TitleEpisodes WHERE parentTconst = '$title_id'");
         $row_eps = mysqli_fetch_assoc($eps);
-        $row_rating = mysqli_fetch_assoc($rating);
+        $rating_query = mysqli_query($con, "SELECT averageRating, numVotes FROM TitleRatings WHERE tconst = '$title_id'");
+        $ratings = mysqli_fetch_assoc($rating_query);
 
         if ($row['titleType'] == "tvSeries") {
           $titleType = "TV show";
-          $runtime = mysqli_query($con, "SELECT primaryTitle, SUM(episodeNumber), SUM(runtimeMinutes) AS total_runtime FROM TitleBasics, TitleEpisodes WHERE TitleEpisodes.parentTconst = TitleBasics.tconst AND primaryTitle = '$title' AND TitleEpisodes.episodeNumber != CHAR(10)");
-          $row_runtime = mysqli_fetch_assoc($runtime);
+          $row_runtime = $row_eps['num_eps'] * $row['runtimeMinutes'];
+        } else if ($row['titleType'] == "tvMovie") {
+          $titleType = "Made-for-TV movie";
+          $row_runtime = $row['runtimeMinutes'];
+        } else if ($row['titleType'] == "tvSpecial") {
+          $titleType = "TV special";
+          $row_runtime = $row['runtimeMinutes'];
+        } else if ($row['titleType'] == "tvMiniSeries") {
+          $titleType = "TV miniseries";
+          $row_runtime = $row['runtimeMinutes'];
         } else {
           $titleType = "Movie";
-          $runtime = mysqli_query($con, "SELECT SUM(runtimeMinutes) AS total_runtime FROM TitleBasics WHERE tconst = '$title_id'");
-          $row_runtime = mysqli_fetch_assoc($runtime);
+          $row_runtime = $row['runtimeMinutes'];
         }
 
         echo "<tr>";
         echo "<td>";
         echo $row['name']." <span class='subtitle'>(".$row['startYear'].")</span><br>";
         echo "<span class='subtitle'><i>$titleType</i></span><br>";
-        echo "<span class='subtitle'><i>Genres: $genres</i></span>";
+        if ($genres != "\N") {
+          echo "<span class='subtitle'><i>Genres: $genres</i></span>";
+        }
         echo "</td>";
         echo "<td>";
-        echo "<b>Total runtime:</b> ".number_format($row_runtime['total_runtime'])." minutes, or ".number_format($row_runtime['total_runtime'] / 60, 2)." hours";
-        if ($titleType == "TV show") {
-          echo "<br><b>Number of episodes:</b> ".number_format($row_eps['num_eps']);
+        if ($row['runtimeMinutes'] != "\N") {
+          echo "<b>Total runtime:</b> ".number_format($row_runtime)." minutes, or ".number_format($row_runtime / 60, 2)." hours";
+        } else {
+          echo "<b>Total runtime:</b> Not defined in IMDB data";
         }
-        echo "<br><b>IMDB rating:</b> ".$row_rating['averageRating']."/10 (".number_format($row_rating['numVotes'])." votes cast)";
+        if ($titleType == "TV show" && $row_eps['num_eps'] > 0) {
+          echo "<br><b><abbr title='The value may be off because two-part episodes running within a single half-hour block are considered one episode.'>Number of episodes</abbr>:</b> ".number_format($row_eps['num_eps']);
+        }
+        echo "<br><b>IMDB rating:</b> ".$ratings['averageRating']."/10 (".number_format($ratings['numVotes'])." votes cast)";
         echo "</td>";
         echo "<td>";
         echo "<a href='assets/scripts/user.php?user=".$row['userId']."&name=$title&action=delete'>Delete from list</a>";

@@ -51,7 +51,7 @@
       <p>Welcome back <b><?php echo $usr; ?></b>! <a href='/my-list.php'>View your list</a><?php if ($role == "admin") { ?>, <a href='/users.php'>manage users</a><?php } ?> or <a href='/login.php'>logout</a>.</p>
     </div>
     <div class="head-content">
-      <h1>User management</h1>
+      <h1>User management (<a href="index.php">Return to home page</a>)</h1>
     </div>
     <table class="user-listing">
       <thead>

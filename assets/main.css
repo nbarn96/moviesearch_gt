@@ -76,3 +76,35 @@ body {
 .subtitle {
   font-size: 14px;
 }
+
+#results, #loading {
+  max-width: 1200px;
+  margin: 40px auto;
+}
+
+#loading {
+  font-size: 22px;
+  text-align: center;
+}
+
+.user-listing {
+  border-collapse: collapse;
+  font-size: 22px;
+  margin: 20px auto;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.user-listing td {
+  padding: 8px;
+}
+
+.user-listing thead tr td {
+  background-color: #333333;
+  color: #fff;
+  font-weight: bold;
+}
+
+.user-listing a {
+  padding: 0 6px;
+}
