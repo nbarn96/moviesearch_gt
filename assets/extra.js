@@ -7,6 +7,7 @@ $(document).ready(function() {
 
   $("#query").change(function() {
     var value = this.value;
+    var user_role = $("#role").val();
     if (value == "") {
       $(".help").show();
       $("#loading").hide();
@@ -18,9 +19,7 @@ $(document).ready(function() {
       $.ajax({
         type: 'POST',
         url: 'assets/scripts/search.php',
-        data: {
-          action: value
-        },
+        data: { 'action': value, 'role': user_role },
         success: function(html) {
           $("#loading").hide();
           $(".help").hide();

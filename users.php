@@ -21,8 +21,8 @@
     <title>User management :: Movie app</title>
     <link rel="stylesheet" href="assets/main.css" />
     <link href="https://fonts.googleapis.com/css?family=Arimo" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script type="text/javascript" src="assets/extra.js"></script>
-    <script type="text/javascript" src="assets/jquery.js"></script>
     <style type="text/css">
       .user-listing {
         border-collapse: collapse;

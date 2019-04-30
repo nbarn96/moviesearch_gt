@@ -1,4 +1,5 @@
 <?php
+  session_start();
   include "auth.php";
 
   if (isset($_GET['action'])) {
@@ -8,6 +9,8 @@
       promoteUser($_GET['id']);
     } elseif ($_GET['action'] == "delete") {
       deleteUser($_GET['id']);
+    } else if ($_GET['action'] == "addtolist") {
+      addToList($_GET['id']);
     }
   }
 
@@ -19,6 +22,17 @@
       mysqli_query($conn, "DELETE FROM Lists WHERE userId = '$usrname' AND name = '$del_title'");
       header("Location: /my-list.php");
     }
+  }
+
+  function addToList($title_id) {
+    $conn = conn();
+    $usr = $_SESSION['movies'];
+    $ent_id = $title_id;
+    $title = mysqli_query($conn, "SELECT primaryTitle FROM TitleBasics WHERE tconst = '$ent_id'");
+    $row = mysqli_fetch_assoc($title);
+    $title_name = $row['primaryTitle'];
+    mysqli_query($conn, "INSERT INTO Lists (userId, titles, name) VALUES ('$usr', '$ent_id', '$title_name')");
+    header("Location: /my-list.php");
   }
 
   function userRole($userId) {
@@ -72,7 +86,7 @@
 
   function getUserList($userId) {
     $con = conn();
-    $query = mysqli_query($con, "SELECT userId, titles, name, TitleBasics.averageRating as averageRating, TitleBasics.runtimeMinutes AS runtimeMinutes, TitleBasics.genres AS genres, TitleBasics.titleType AS titleType, TitleBasics.startYear as startYear, TitleRatings.numVotes AS numVotes FROM Lists INNER JOIN TitleBasics WHERE Lists.userId = '$userId' AND Lists.titles = TitleBasics.tconst");
+    $query = mysqli_query($con, "SELECT userId, titles, name, TitleRatings.averageRating as averageRating, TitleBasics.runtimeMinutes AS runtimeMinutes, TitleBasics.genres AS genres, TitleBasics.titleType AS titleType, TitleBasics.startYear as startYear, TitleRatings.numVotes AS numVotes FROM Lists INNER JOIN TitleBasics INNER JOIN TitleRatings WHERE Lists.userId = '$userId' AND Lists.titles = TitleBasics.tconst AND TitleRatings.tconst = Lists.titles");
 
     if (mysqli_num_rows($query) == 0) {
       echo "You have no titles in your list!";
@@ -80,14 +94,11 @@
       echo "<table class='user-listing' style='min-width: 100%; text-align: left;'>";
       echo "<thead>";
       echo "<tr>";
-      echo "<td>";
+      echo "<td style='max-width: 600px;'>";
       echo "Title";
       echo "</td>";
-      echo "<td>";
-      echo "Title info";
-      echo "</td>";
-      echo "<td>";
-      echo "Actions";
+      echo "<td style='max-width: 600px;'>";
+      echo "Statistics";
       echo "</td>";
       echo "</tr>";
       echo "</thead>";
@@ -121,6 +132,7 @@
         echo "<tr>";
         echo "<td>";
         echo $row['name']." <span class='subtitle'>(".$row['startYear'].")</span><br>";
+        echo "<a class='action-link' href='assets/scripts/user.php?user=".$row['userId']."&name=$title&action=delete'>Delete from list</a><br>";
         echo "<span class='subtitle'><i>$titleType</i></span><br>";
         if ($genres != "\N") {
           echo "<span class='subtitle'><i>Genres: $genres</i></span>";
@@ -136,9 +148,6 @@
           echo "<br><b><abbr title='The value may be off because two-part episodes running within a single half-hour block are considered one episode.'>Number of episodes</abbr>:</b> ".number_format($row_eps['num_eps']);
         }
         echo "<br><b>IMDB rating:</b> ".$ratings['averageRating']."/10 (".number_format($ratings['numVotes'])." votes cast)";
-        echo "</td>";
-        echo "<td>";
-        echo "<a href='assets/scripts/user.php?user=".$row['userId']."&name=$title&action=delete'>Delete from list</a>";
         echo "</td>";
         echo "</tr>";
       }

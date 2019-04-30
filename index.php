@@ -17,7 +17,7 @@
     <title>Movie app</title>
     <link rel="stylesheet" href="assets/main.css" />
     <link href="https://fonts.googleapis.com/css?family=Arimo" rel="stylesheet">
-    <script type="text/javascript" src="assets/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script type="text/javascript" src="assets/extra.js"></script>
   </head>
   <body>
@@ -30,6 +30,7 @@
     </div>
     <div class="form">
       <input type="text" id="query" placeholder="Search for stuff!" />
+      <input type="hidden" id="role" value="<?php echo $role; ?>" />
     </div>
     <div id="loading">Loading results...</div>
     <div id="results"></div>
